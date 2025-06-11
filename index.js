@@ -1,11 +1,11 @@
-const express = require('express')
-const app = express()
-const port = 3000
+const app = require('./app');
 
-app.get('/', (req, res) => {
-  res.send('Hello nodejs!')
-})
+require('dotenv').config()
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+const PORT = process.env.PORT || 3000;
+
+
+app.listen(PORT, () => {
+    console.log(PORT)
+  console.log(`Server is running on port ${PORT}`);
+});
