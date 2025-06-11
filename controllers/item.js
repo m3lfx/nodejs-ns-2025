@@ -9,9 +9,7 @@ exports.getAllItems = (req, res) => {
                 console.log(err);
                 return;
             }
-
             console.log(rows);
-           
             return res.status(200).json({
                 rows,
             })
@@ -19,5 +17,5 @@ exports.getAllItems = (req, res) => {
     } catch (error) {
         console.log(error)
     }
-
 }
+
