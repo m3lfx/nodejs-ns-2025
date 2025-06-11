@@ -85,3 +85,46 @@ exports.createItem = (req, res) => {
     });
 }
 
+exports.updateItem = (req, res) => {
+
+    console.log(req.file)
+    const item = req.body
+    const image = req.file
+    const id = req.params.id
+
+    const { description, cost_price, sell_price, quantity } = req.body;
+    if (req.file) {
+        imagePath = req.file.path.replace(/\\/g, "/");
+    }
+
+    if (!description || !cost_price || !sell_price) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const sql = 'UPDATE item SET description = ?, cost_price = ?, sell_price = ?, image = ? WHERE item_id = ?';
+    const values = [description, cost_price, sell_price, imagePath, id];
+
+    connection.execute(sql, values, (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ error: 'Error inserting item', details: err });
+        }
+    });
+
+    const stockSql = 'UPDATE stock SET quantity = ? WHERE item_id = ?';
+    const stockValues = [quantity, id];
+
+    connection.execute(stockSql, stockValues, (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ error: 'Error updating item', details: err });
+        }
+
+
+    });
+
+    return res.status(201).json({
+        success: true,
+    });
+}
+
