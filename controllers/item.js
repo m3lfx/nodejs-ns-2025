@@ -128,7 +128,7 @@ exports.updateItem = (req, res) => {
     });
 }
 
-exports.deleteItem = (req, res, next) => {
+exports.deleteItem = (req, res) => {
 
     const id = req.params.id
     const sql = 'DELETE FROM item WHERE item_id = ?';
