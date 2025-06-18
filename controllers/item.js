@@ -21,7 +21,7 @@ exports.getAllItems = (req, res) => {
 
 exports.getSingleItem = (req, res) => {
     //http://localhost:4000/api/v1/items/id
-    const sql = 'SELECT * FROM item  WHERE item_id = ?'
+    const sql = 'SELECT * FROM item i INNER JOIN stock s ON i.item_id = s.item_id WHERE i.item_id = ?'
     const values = [parseInt(req.params.id)];
     try {
         connection.execute(sql, values, (err, result, fields) => {
