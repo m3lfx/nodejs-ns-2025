@@ -62,21 +62,21 @@ const loginUser = (req, res) => {
 };
 
 const updateUser = (req, res) => {
-  // {
-  //   "name": "steve",
-  //   "email": "steve@gmail.com",
-  //   "password": "password"
-  // }
-  console.log(req.body, req.file)
-  const { title, fname, lname, addressline, town, zipcode, phone, userId,} = req.body;
+    // {
+    //   "name": "steve",
+    //   "email": "steve@gmail.com",
+    //   "password": "password"
+    // }
+    console.log(req.body, req.file)
+    const { title, fname, lname, addressline, town, zipcode, phone, userId, } = req.body;
 
-  if (req.file) {
-    image = req.file.path.replace(/\\/g, "/");
-  }
-  //     INSERT INTO users(user_id, username, email)
-  //   VALUES(1, 'john_doe', 'john@example.com')
-  // ON DUPLICATE KEY UPDATE email = 'john@example.com';
-  const userSql = `
+    if (req.file) {
+        image = req.file.path.replace(/\\/g, "/");
+    }
+    //     INSERT INTO users(user_id, username, email)
+    //   VALUES(1, 'john_doe', 'john@example.com')
+    // ON DUPLICATE KEY UPDATE email = 'john@example.com';
+    const userSql = `
   INSERT INTO customer 
     (title, fname, lname, addressline, town, zipcode, phone, image_path, user_id)
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -91,25 +91,51 @@ const updateUser = (req, res) => {
     image_path = VALUES(image_path)`;
     const params = [title, fname, lname, addressline, town, zipcode, phone, image, userId];
 
-  try {
-    connection.execute(userSql, params, (err, result) => {
-      if (err instanceof Error) {
-        console.log(err);
+    try {
+        connection.execute(userSql, params, (err, result) => {
+            if (err instanceof Error) {
+                console.log(err);
 
-        return res.status(401).json({
-          error: err
+                return res.status(401).json({
+                    error: err
+                });
+            }
+
+            return res.status(200).json({
+                success: true,
+                result
+            })
         });
-      }
-
-      return res.status(200).json({
-        success: true,
-        result
-      })
-    });
-  } catch (error) {
-    console.log(error)
-  }
+    } catch (error) {
+        console.log(error)
+    }
 
 };
 
-module.exports = { registerUser, loginUser, updateUser};
+const deactivateUser = (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+
+    const sql = 'UPDATE users SET deleted_at = ? WHERE email = ?';
+    const timestamp = new Date();
+
+    connection.execute(sql, [timestamp, email], (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ error: 'Error deactivating user', details: err });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'User deactivated successfully',
+            email,
+            deleted_at: timestamp
+        });
+    });
+};
+
+module.exports = { registerUser, loginUser, updateUser, deactivateUser };
