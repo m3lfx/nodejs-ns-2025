@@ -10,7 +10,9 @@ const { getAllItems,
     deleteItem
 } = require('../controllers/item')
 
-router.get('/items', getAllItems)
+const {isAuthenticatedUser} = require('../middlewares/auth')
+
+router.get('/items', isAuthenticatedUser, getAllItems)
 router.get('/items/:id', getSingleItem)
 router.post('/items', upload.single('image'), createItem)
 router.put('/items/:id', upload.single('image'), updateItem)

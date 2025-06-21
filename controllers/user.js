@@ -1,5 +1,6 @@
 const connection = require('../config/database');
 const bcrypt = require('bcrypt')
+const jwt = require("jsonwebtoken")
 
 const registerUser = async (req, res) => {
     // {
@@ -56,9 +57,14 @@ const loginUser = async (req, res) => {
         // Remove password from response
         delete user.password;
 
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRES_IN,
+        });
+
         return res.status(200).json({
             success: "welcome back",
-            user: results[0]
+            user: results[0],
+            token
         });
     });
 };
