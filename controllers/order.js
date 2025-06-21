@@ -61,6 +61,8 @@ exports.createOrder = (req, res, next) => {
                                 }
                             });
                         }
+
+                        
                         completed++;
                         
                         if (completed === cart.length && !errorOccurred) {
