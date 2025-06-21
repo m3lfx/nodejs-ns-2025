@@ -31,7 +31,7 @@ const registerUser = async (req, res) => {
 
 };
 
-const loginUser = (req, res) => {
+const loginUser = async (req, res) => {
     console.log(req.body)
     const { email, password } = req.body;
     const sql = 'SELECT id, name, email, password FROM users WHERE email = ? AND deleted_at IS NULL';
@@ -40,6 +40,7 @@ const loginUser = (req, res) => {
             console.log(err);
             return res.status(500).json({ error: 'Error logging in', details: err });
         }
+        console.log(results)
         if (results.length === 0) {
             return res.status(401).json({ success: false, message: 'Invalid email or password' });
         }
@@ -47,6 +48,7 @@ const loginUser = (req, res) => {
         const user = results[0];
 
         const match = await bcrypt.compare(password, user.password);
+        console.log(match)
         if (!match) {
             return res.status(401).json({ success: false, message: 'Invalid email or password' });
         }
