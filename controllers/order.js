@@ -1,10 +1,11 @@
 const connection = require('../config/database');
+const sendEmail = require('../utils/sendEmail')
 
 exports.createOrder = (req, res, next) => {
     console.log(req.body,)
     const { cart, user } = req.body;
     console.log(cart, user.id)
-    
+
     const dateOrdered = new Date();
     const dateShipped = new Date();
 
@@ -27,7 +28,7 @@ exports.createOrder = (req, res, next) => {
             }
 
             // const customer_id = results[0].customer_id;
-            const {customer_id, email} = results[0]
+            const { customer_id, email } = results[0]
 
             // Insert into orderinfo
             const orderInfoSql = 'INSERT INTO orderinfo (customer_id, date_placed, date_shipped) VALUES (?, ?, ?)';
@@ -66,11 +67,11 @@ exports.createOrder = (req, res, next) => {
                             });
                         }
 
-                        
+
                         completed++;
-                        
+
                         if (completed === cart.length && !errorOccurred) {
-                            connection.commit(err => {
+                            connection.commit(async err => {
                                 if (err) {
                                     return connection.rollback(() => {
                                         if (!res.headersSent) {
@@ -78,6 +79,20 @@ exports.createOrder = (req, res, next) => {
                                         }
                                     });
                                 }
+
+                                const message = 'your order is being processed'
+                                try {
+                                    await sendEmail({
+                                        email,
+                                        subject: 'Order Success',
+                                        message
+                                    })
+                                }
+                                catch (emailErr) {
+
+                                    console.log('Email error:', emailErr);
+                                }
+
                                 if (!res.headersSent) {
                                     res.status(201).json({
                                         success: true,
