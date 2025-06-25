@@ -54,12 +54,10 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid email or password' });
         }
 
-        // Remove password from response
+       
         delete user.password;
 
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-            expiresIn: process.env.JWT_EXPIRES_IN,
-        });
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, );
 
         return res.status(200).json({
             success: "welcome back",
