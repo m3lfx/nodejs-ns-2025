@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken")
 exports.isAuthenticatedUser = (req, res, next) => {
 
-    console.log(req.headers)
+    // console.log(req.headers)
    
     if (!req.header('Authorization')) {
         return res.status(401).json({ message: 'Login first to access this resource' })
@@ -16,7 +16,9 @@ exports.isAuthenticatedUser = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    console.log(decoded.id)
+   
+    req.body.user = {id: decoded.id}
+    // console.log(req)
 
     next()
 };
